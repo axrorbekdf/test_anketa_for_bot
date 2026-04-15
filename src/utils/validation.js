@@ -25,8 +25,13 @@ export function validateStep(step, data) {
     if (data.talabaMi === '1' && !data.typeEducation) errors.typeEducation = "Ta'lim turini tanlang"
 
     if (data.talimMuassasalar?.length) {
-      const incomplete = data.talimMuassasalar.some(t => !t.name?.trim())
-      if (incomplete) errors.talimMuassasalar = "Muassasa nomi to'ldirilmagan qatorlar bor"
+      const isTalaba = data.talabaMi === '1'
+      const incomplete = data.talimMuassasalar.some(t =>
+        !t.name?.trim() || !t.start_date || (!isTalaba && !t.end_date)
+      )
+      if (incomplete) errors.talimMuassasalar = isTalaba
+        ? "Muassasa nomi va kirish sanasini kiriting"
+        : "Muassasa nomi va sanalarni to'liq kiriting"
     }
     if (data.tillar?.length) {
       const incomplete = data.tillar.some(t => !t.name?.trim() || !t.level)
@@ -35,7 +40,14 @@ export function validateStep(step, data) {
   }
 
   if (step === 2) {
-    if (!data.boyVazn?.trim()) errors.boyVazn = "Bo'y va vaznni kiriting (masalan: 170/65)"
+    if (!data.boyVazn?.trim() || !data.boyVazn.includes('/')) {
+      errors.boyVazn = "Bo'y va vaznni kiriting"
+    } else {
+      const [boyStr, vaznStr] = data.boyVazn.split('/')
+      const boy = parseInt(boyStr); const vazn = parseInt(vaznStr)
+      if (!boyStr || isNaN(boy) || boy < 120 || boy > 230) errors.boyVazn = "Bo'y 120–230 sm orasida bo'lishi kerak"
+      else if (!vaznStr || isNaN(vazn) || vazn < 40 || vazn > 150) errors.boyVazn = "Vazn 40–150 kg orasida bo'lishi kerak"
+    }
     if (!data.viloyat) errors.viloyat = 'Viloyatni tanlang'
     if (!data.tuman) errors.tuman = 'Shahar / tumanni tanlang'
     if (!data.manzil?.trim()) errors.manzil = 'Manzilingizni kiriting'
@@ -55,6 +67,12 @@ export function validateStep(step, data) {
   if (step === 4) {
     if (data.soglik?.some(s => !s.status))
       errors.soglik = "Barcha savollarga javob bering"
+    if (data.ishTarixi?.length) {
+      const incomplete = data.ishTarixi.some(i =>
+        !i.start_date || !i.company_name?.trim() || !i.end_date || !i.position?.trim()
+      )
+      if (incomplete) errors.ishTarixi = "Ish tarixi jadvalidagi barcha ustunlarni to'ldiring"
+    }
     if (!data.oxirgiMaosh) errors.oxirgiMaosh = 'Oxirgi ish haqi kiritish shart'
     if (!data.xohlganMaosh) errors.xohlganMaosh = 'Xohlagan maosh kiritish shart'
     if (!data.avtomobil) errors.avtomobil = 'Javob bering'

@@ -1,5 +1,5 @@
-import { FormInput } from '../components/FormInput'
-import { FormSelect, RadioGroup } from '../components/FormSelect'
+import { FormInput, DateSelect } from '../components/FormInput'
+import { RadioGroup, FormSelect } from '../components/FormSelect'
 import { EntryList } from '../components/EntryList'
 import { useDynamicTable } from '../components/DynamicTable'
 import { useEffect } from 'react'
@@ -10,10 +10,10 @@ const JINS_OPTS = [
 ]
 
 const OILAVIY_OPTS = [
-  "Uylanmagan / Turmushga chiqmagan",
-  "Uylanganman / Turmushga chiqganman",
-  "Ajrashganman",
-  "Bevaman",
+  "Oila qurgan",
+  "Oila qurmagan",
+  "Ajrashgan",
+  "Beva",
 ]
 
 const FARZAND_FIELDS = [
@@ -21,7 +21,7 @@ const FARZAND_FIELDS = [
     key: 'gender', label: 'Jinsi', type: 'select',
     options: [{ value: 'erkak', label: "O'g'il" }, { value: 'ayol', label: 'Qiz' }],
   },
-  { key: 'date', label: "Tug'ilgan sana", type: 'date' },
+  { key: 'date', label: "Tug'ilgan sana", type: 'dateselect' },
 ]
 
 const QARINDOSH_OPTS = [
@@ -48,7 +48,7 @@ const QARINDOSH_OPTS = [
 // EntryList fields — har qator karta sifatida ko'rinadi
 const TARKIB_FIELDS = [
   { key: 'who', label: 'Kimi', type: 'select', options: QARINDOSH_OPTS },
-  { key: 'date', label: "Tug'ilgan sana", type: 'date' },
+  { key: 'date', label: "Tug'ilgan sana", type: 'dateselect' },
   { key: 'job', label: "Qayerda ishlaydi / o'qiydi", type: 'text', placeholder: "Ish yoki o'quv joyi" },
 ]
 
@@ -81,8 +81,10 @@ export function Step1({ data, onChange, errors = {} }) {
             value={data.familiya} onChange={v => onChange('familiya', v)} error={errors.familiya} fieldId="field-familiya" />
           <FormInput label="Otasining ismi" required placeholder="Otangizning ismini kiriting"
             value={data.otaIsmi} onChange={v => onChange('otaIsmi', v)} error={errors.otaIsmi} fieldId="field-otaIsmi" />
-          <FormInput label="Tug'ilgan sana" required type="date"
-            value={data.tugSana} onChange={v => onChange('tugSana', v)} error={errors.tugSana} fieldId="field-tugSana" />
+          <DateSelect label="Tug'ilgan sana" required
+            value={data.tugSana} onChange={v => onChange('tugSana', v)}
+            error={errors.tugSana} fieldId="field-tugSana"
+            minYear={1940} maxYear={new Date().getFullYear() - 15} />
           <RadioGroup label="Jinsingiz" required
             value={data.jins} onChange={v => onChange('jins', v)}
             options={JINS_OPTS} error={errors.jins} fieldId="field-jins" />

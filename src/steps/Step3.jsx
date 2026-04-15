@@ -77,7 +77,10 @@ export function Step3({ data, onChange, errors = {} }) {
     ?.find(r => String(r.id) === String(data.viloyat))
     ?.region?.map(t => ({ value: String(t.id), label: t.name })) || []
   const filiallar = info?.branches?.map(b => ({ value: String(b.id), label: b.name })) || []
-  const lavozimlar = (info?.positions?.data || info?.positions || []).map(p => ({ value: String(p.id), label: p.name }))
+  const posSource = data.jins === 'ayol'
+    ? (Array.isArray(info?.positionWomen) ? info.positionWomen : (info?.positionWomen?.data || []))
+    : (Array.isArray(info?.positionMen) ? info.positionMen : (info?.positionMen?.data || []))
+  const lavozimlar = posSource.map(p => ({ value: String(p.id), label: p.name }))
 
   const handleViloyat = (v) => {
     onChange('viloyat', v)

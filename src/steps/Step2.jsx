@@ -11,8 +11,8 @@ const MALUMOT_OPTS = [
 // Ta'lim muassasalari — EntryList fields (to'liq sana)
 const TALIM_FIELDS = [
   { key: 'name', label: 'Muassasa nomi', type: 'text', placeholder: 'TATU, NamMQI, 15-maktab...' },
-  { key: 'start_date', label: "O'qishga kirgan sana", type: 'date' },
-  { key: 'end_date', label: "O'qishni bitirgan sana", type: 'date' },
+  { key: 'start_date', label: "O'qishga kirgan sana", type: 'dateselect' },
+  { key: 'end_date', label: "O'qishni bitirgan sana", type: 'dateselect' },
   { key: 'specialty', label: "Mutaxassislik / yo'nalish", type: 'text', placeholder: "IT, Iqtisod, Tibbiyot..." },
 ]
 
@@ -114,7 +114,7 @@ export function Step2({ data, onChange, errors = {} }) {
             onAdd={addTa} onRemove={removeTa} onUpdate={updateTa}
             emptyMessage="Ta'lim muassasasi qo'shilmagan. '+' tugmasini bosing"
             error={errors.talimMuassasalar}
-            requiredKeys={['name']}
+            requiredKeys={data.talabaMi === '1' ? ['name', 'start_date'] : ['name', 'start_date', 'end_date']}
             fieldId="field-talimMuassasalar"
           />
         </div>

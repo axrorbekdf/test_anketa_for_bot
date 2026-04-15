@@ -6,6 +6,8 @@
  *   type: 'text'(default) | 'date' | 'number' | 'select' | 'combobox'
  * requiredKeys: validation uchun
  */
+import { DateSelect } from './FormInput'
+
 export function EntryList({ title, fields, rows, onAdd, onRemove, onUpdate,
   emptyMessage, error, requiredKeys, fieldId }) {
 
@@ -86,6 +88,14 @@ export function EntryList({ title, fields, rows, onAdd, onRemove, onUpdate,
                           : <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
                       )}
                     </select>
+                  ) : field.type === 'dateselect' ? (
+                    <DateSelect
+                      value={row[field.key] || ''}
+                      onChange={v => onUpdate(i, field.key, v)}
+                      minYear={field.minYear || 1940}
+                      maxYear={field.maxYear}
+                      error={isEmpty ? ' ' : null}
+                    />
                   ) : field.type === 'combobox' ? (
                     <>
                       <input

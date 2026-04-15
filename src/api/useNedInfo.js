@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const BASE = ''
+const BASE = 'http://10.100.104.120:8008'
 let _cache = null
 
 export function useNedInfo() {
@@ -11,7 +11,7 @@ export function useNedInfo() {
     if (_cache) return
     fetch(`${BASE}/api/new-anketa/ned-info`)
       .then(r => r.json())
-      .then(d => { _cache = d; setInfo(d); setLoading(false) })
+      .then(d => { _cache = d; setInfo(d); setLoading(false); console.log('nedInfo:', d) })
       .catch(() => setLoading(false))
   }, [])
 

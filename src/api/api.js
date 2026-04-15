@@ -1,4 +1,4 @@
-const BASE = ''
+const BASE = 'http://10.100.104.120:8008'
 
 export async function uploadImage(file) {
   const fd = new FormData()

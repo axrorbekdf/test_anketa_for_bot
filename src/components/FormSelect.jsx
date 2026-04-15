@@ -25,7 +25,7 @@ export function FormSelect({ label, required, value, onChange, options = [], err
   )
 }
 
-export function RadioGroup({ label, required, value, onChange, options = [], error, fieldId }) {
+export function RadioGroup({ label, required, value, onChange, options = [], error, fieldId, style }) {
   return (
     <div className="field" id={fieldId}>
       {label && (
@@ -34,7 +34,7 @@ export function RadioGroup({ label, required, value, onChange, options = [], err
           {required && <span className="req">*</span>}
         </label>
       )}
-      <div className="radio-group">
+      <div className="radio-group" style={style}>
         {options.map(opt => (
           <button
             key={opt.value}

@@ -23,9 +23,9 @@ const HA_YOQ_OPTS = [
 
 // backend: anketa_worked_befores
 const ISH_TARIXI_FIELDS = [
-  { key: 'start_date', label: 'Qabul sana', type: 'date' },
+  { key: 'start_date', label: 'Qabul sana', type: 'dateselect', minYear: 1990 },
   { key: 'company_name', label: 'Ish joyi nomi', type: 'text', placeholder: 'Kompaniya nomi...' },
-  { key: 'end_date', label: "Bo'shagan sana", type: 'date' },
+  { key: 'end_date', label: "Bo'shagan sana", type: 'dateselect', minYear: 1990 },
   { key: 'position', label: 'Lavozimingiz', type: 'text', placeholder: 'Kassir, operator...' },
 ]
 
@@ -156,6 +156,8 @@ export function Step5({ data, onChange, errors = {} }) {
             rows={ishTarixi}
             onAdd={addI} onRemove={removeI} onUpdate={updateI}
             emptyMessage="Ish tarixi kiritilmagan. '+' tugmasini bosing"
+            error={errors.ishTarixi}
+            requiredKeys={['start_date', 'company_name', 'end_date', 'position']}
             fieldId="field-ishTarixi"
           />
         </div>
