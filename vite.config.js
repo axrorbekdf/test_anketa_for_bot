@@ -7,8 +7,9 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://10.100.104.120:8008',
+        target: 'https://garant-hr.uz',
         changeOrigin: true,
+        secure: true,
       },
     },
   },

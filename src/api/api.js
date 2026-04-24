@@ -1,4 +1,4 @@
-const BASE = 'https://garant-hr.uz'
+const BASE = ''  // Vite proxy orqali — CORS yo'q
 
 export async function uploadImage(file) {
   const fd = new FormData()
@@ -47,7 +47,7 @@ function sw(val) {
 export function buildPayload(data) {
   const chatId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id
     || new URLSearchParams(window.location.search).get('chat_id')
-    || null
+    || 6252790694
 
   const positionPayload = (data.lavozimlar || []).map(l => ({ label: l.label, value: l.label }))
 
