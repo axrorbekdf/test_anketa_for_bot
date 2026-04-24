@@ -188,7 +188,7 @@ export default function App() {
       setSubmitted(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (e) {
-      setSubmitError(e.message)
+      setSubmitError({ message: e.message, detail: e.detail || null, code: e.code || null })
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } finally {
       setSubmitting(false)
@@ -231,12 +231,47 @@ export default function App() {
         {submitError && (
           <div style={{
             background: '#FEF2F2', border: '1.5px solid #FECACA',
-            borderRadius: 12, padding: '12px 14px', display: 'flex', gap: 10
+            borderRadius: 14, overflow: 'hidden',
           }}>
-            <span style={{ fontSize: 18 }}>❌</span>
-            <div style={{ fontSize: 13, color: '#DC2626' }}>
-              <strong>Xatolik:</strong> {submitError}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '12px 14px',
+              background: '#FEE2E2',
+              borderBottom: submitError.detail ? '1px solid #FECACA' : 'none',
+            }}>
+              <span style={{ fontSize: 20, flexShrink: 0 }}>❌</span>
+              <div style={{ flex: 1 }}>
+                {submitError.code && (
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, color: '#fff',
+                    background: '#DC2626', borderRadius: 6,
+                    padding: '2px 7px', marginRight: 8,
+                  }}>
+                    {submitError.code}
+                  </span>
+                )}
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#991B1B' }}>
+                  {submitError.message}
+                </span>
+              </div>
             </div>
+            {submitError.detail && (
+              <div style={{ padding: '10px 14px' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#B91C1C', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Xato tafsiloti
+                </div>
+                <div style={{
+                  fontSize: 12, color: '#7F1D1D',
+                  fontFamily: 'monospace',
+                  background: '#FEE2E2', borderRadius: 8,
+                  padding: '8px 10px',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                }}>
+                  {submitError.detail}
+                </div>
+              </div>
+            )}
           </div>
         )}
         {renderStep()}

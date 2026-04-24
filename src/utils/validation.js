@@ -23,6 +23,7 @@ export function validateStep(step, data) {
     if (!data.malumot?.trim()) errors.malumot = "Ma'lumot darajasini kiriting yoki tanlang"
     if (!data.talabaMi) errors.talabaMi = 'Talaba ekanligingizni tanlang'
     if (data.talabaMi === '1' && !data.typeEducation) errors.typeEducation = "Ta'lim turini tanlang"
+    if (data.talabaMi === '1' && !data.specialty?.trim()) errors.specialty = "Soha / mutaxassislikni kiriting"
 
     if (data.talimMuassasalar?.length) {
       const isTalaba = data.talabaMi === '1'
@@ -59,6 +60,7 @@ export function validateStep(step, data) {
     if (!data.avvalIshlagan) errors.avvalIshlagan = 'Javob bering'
     if (!data.fuqaro) errors.fuqaro = 'Javob bering'
     if (!data.ishBilanTaminlangan) errors.ishBilanTaminlangan = 'Javob bering'
+    if (data.ishBilanTaminlangan === 'ha' && !data.workedPlace?.trim()) errors.workedPlace = 'Ish joyingizni kiriting'
     if (!data.avtomobil) errors.avtomobil = 'Javob bering'
     if (data.avtomobil === 'ha' && !data.avtomobilRusumi) errors.avtomobilRusumi = 'Avtomobil rusumini tanlang'
     if (data.jins === 'erkak' && !data.trip) errors.trip = 'Javob bering'

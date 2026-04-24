@@ -1,4 +1,4 @@
-import { FormTextarea } from '../components/FormInput'
+import { FormInput, FormTextarea } from '../components/FormInput'
 import { RadioGroup, FormSelect } from '../components/FormSelect'
 import { EntryList } from '../components/EntryList'
 import { useDynamicTable } from '../components/DynamicTable'
@@ -67,6 +67,15 @@ export function Step4({ data, onChange, errors = {} }) {
           <RadioGroup label="Hozirda ish bilan ta'minlanganmisiz?" required
             value={data.ishBilanTaminlangan} onChange={v => onChange('ishBilanTaminlangan', v)}
             options={HA_YOQ} error={errors.ishBilanTaminlangan} fieldId="field-ishBilanTaminlangan" />
+          {data.ishBilanTaminlangan === 'ha' && (
+            <FormInput
+              label="Hozirda qayerda ishlayapsiz?" required
+              placeholder="Kompaniya nomi"
+              value={data.workedPlace || ''}
+              onChange={v => onChange('workedPlace', v)}
+              error={errors.workedPlace} fieldId="field-workedPlace"
+            />
+          )}
           <RadioGroup label="Shaxsiy avtomobilingiz bormi?" required
             value={data.avtomobil} onChange={v => onChange('avtomobil', v)}
             options={HA_YOQ} error={errors.avtomobil} fieldId="field-avtomobil" />

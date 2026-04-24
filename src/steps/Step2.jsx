@@ -1,3 +1,4 @@
+import { FormInput } from '../components/FormInput'
 import { RadioGroup, FormSelect } from '../components/FormSelect'
 import { EntryList } from '../components/EntryList'
 import { useDynamicTable } from '../components/DynamicTable'
@@ -84,16 +85,25 @@ export function Step2({ data, onChange, errors = {} }) {
             value={data.talabaMi} onChange={v => { onChange('talabaMi', v); onChange('typeEducation', '') }}
             options={TALABA_OPTS} error={errors.talabaMi} fieldId="field-talabaMi" />
           {data.talabaMi === '1' && (
-            <FormSelect
-              label="Ta'lim turi" required
-              value={data.typeEducation} onChange={v => onChange('typeEducation', v)}
-              options={[
-                { value: 'kunduzgi', label: 'Kunduzgi' },
-                { value: 'sirtqi', label: 'Sirtqi' },
-                { value: 'kechki', label: 'Kechki' },
-              ]}
-              error={errors.typeEducation} fieldId="field-typeEducation"
-            />
+            <>
+              <FormSelect
+                label="Ta'lim turi" required
+                value={data.typeEducation} onChange={v => onChange('typeEducation', v)}
+                options={[
+                  { value: 'kunduzgi', label: 'Kunduzgi' },
+                  { value: 'sirtqi', label: 'Sirtqi' },
+                  { value: 'kechki', label: 'Kechki' },
+                ]}
+                error={errors.typeEducation} fieldId="field-typeEducation"
+              />
+              <FormInput
+                label="Qaysi soha / mutaxassislik?" required
+                placeholder="IT, Iqtisod, Tibbiyot, Huquq..."
+                value={data.specialty || ''}
+                onChange={v => onChange('specialty', v)}
+                error={errors.specialty} fieldId="field-specialty"
+              />
+            </>
           )}
         </div>
       </div>

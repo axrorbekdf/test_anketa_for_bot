@@ -20,7 +20,10 @@ export async function submitAnketa(payload) {
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error(err?.message || `Server xatosi: ${res.status}`)
+    const e = new Error(err?.message || `Server xatosi: ${res.status}`)
+    e.detail = err?.error || null
+    e.code = err?.code || res.status
+    throw e
   }
   return res.json()
 }
@@ -57,7 +60,7 @@ export function buildPayload(data) {
       end_date: t.end_date,
       specialty: t.specialty,
     })),
-    specialty: null,
+    specialty: data.specialty || null,
     state_id: data.viloyat,
     region_id: data.tuman,
     address: data.manzil,
@@ -72,6 +75,7 @@ export function buildPayload(data) {
     citizen: sw(data.fuqaro),
     // job_now: ha=1, yo'q=2
     job_now: sw(data.ishBilanTaminlangan),
+    worked_place: data.workedPlace || null,
     about_vacancy: data.qaydanBildi,
     height: data.boyVazn,
     now_study: data.talabaMi,
