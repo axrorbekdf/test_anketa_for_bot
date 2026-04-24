@@ -7,6 +7,7 @@ export async function uploadImage(file) {
   try {
     res = await fetch(`${BASE}/api/anketa-web-app/store/image`, {
       method: 'POST',
+      headers: { 'Accept': 'application/json' },
       body: fd,
     })
   } catch (e) {
@@ -23,7 +24,7 @@ export async function uploadImage(file) {
 export async function submitAnketa(payload) {
   const res = await fetch(`${BASE}/api/anketa-web-app/create`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(payload),
   })
   if (!res.ok) {

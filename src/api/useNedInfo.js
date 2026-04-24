@@ -9,7 +9,7 @@ export function useNedInfo() {
 
   useEffect(() => {
     if (_cache) return
-    fetch(`${BASE}/api/new-anketa/ned-info`)
+    fetch(`${BASE}/api/new-anketa/ned-info`, { headers: { 'Accept': 'application/json' } })
       .then(r => r.json())
       .then(d => { _cache = d; setInfo(d); setLoading(false); console.log('nedInfo:', d) })
       .catch(() => setLoading(false))
