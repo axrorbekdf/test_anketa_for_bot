@@ -1,5 +1,21 @@
 const BASE = ''  // Vite proxy orqali — CORS yo'q
 
+export async function checkAnketa(chatId) {
+  const res = await fetch(`${BASE}/api/anketa-web-app/check/${chatId}`, {
+    headers: { 'Accept': 'application/json' },
+  })
+  if (!res.ok) throw new Error(`Server xatosi: ${res.status}`)
+  return res.text()
+}
+
+export async function showAnketa(chatId) {
+  const res = await fetch(`${BASE}/api/anketa-web-app/show/${chatId}`, {
+    headers: { 'Accept': 'application/json' },
+  })
+  if (!res.ok) throw new Error(`Server xatosi: ${res.status}`)
+  return res.json()
+}
+
 export async function uploadImage(file) {
   const fd = new FormData()
   fd.append('file', file)
@@ -47,7 +63,7 @@ function sw(val) {
 export function buildPayload(data) {
   const chatId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id
     || new URLSearchParams(window.location.search).get('chat_id')
-    || 6252790694
+    || null
 
   const positionPayload = (data.lavozimlar || []).map(l => ({ label: l.label, value: l.label }))
 

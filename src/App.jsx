@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Step1 } from './steps/Step1'
 import { Step2 } from './steps/Step2'
 import { Step3 } from './steps/Step3'
@@ -6,7 +6,7 @@ import { Step4 } from './steps/Step4'
 import { Step5 } from './steps/Step5'
 import { Step6 } from './steps/Step6'
 import { validateStep } from './utils/validation'
-import { submitAnketa, buildPayload } from './api/api'
+import { submitAnketa, buildPayload, checkAnketa, showAnketa } from './api/api'
 
 const STEPS = [
   { label: 'Shaxsiy', short: '1' },
@@ -134,6 +134,39 @@ function SuccessScreen() {
   )
 }
 
+function LoadingScreen() {
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', gap: 16,
+    }}>
+      <div style={{ fontSize: 40 }}>⏳</div>
+      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>Yuklanmoqda...</div>
+    </div>
+  )
+}
+
+function ReviewingScreen({ anketa }) {
+  const fullName = [anketa?.first_name, anketa?.last_name, anketa?.father_name].filter(Boolean).join(' ')
+  return (
+    <div className="success-screen fade-slide">
+      <span className="success-emoji">📋</span>
+      <div className="success-title">Anketa topshirilgan</div>
+      <p className="success-desc">
+        {fullName && <><strong>{fullName}</strong>,<br /></>}
+        Anketangiz ko'rib chiqilmoqda.<br />
+        Tez orada siz bilan bog'lanamiz.
+      </p>
+      <div className="info-box" style={{ maxWidth: 300 }}>
+        <span className="info-box-icon">💬</span>
+        <span className="info-box-text">
+          Savollar uchun: <a className="tg-link" href="https://t.me/Yordam">@Yordam</a>
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [step, setStep] = useState(0)
   const [formData, setFormData] = useState(INITIAL)
@@ -142,6 +175,34 @@ export default function App() {
   const [submitError, setSubmitError] = useState(null)
   const [submitted, setSubmitted] = useState(false)
   const [showReload, setShowReload] = useState(false)
+  const [appStatus, setAppStatus] = useState('loading') // 'loading' | 'new' | 'reviewing'
+  const [existingAnketa, setExistingAnketa] = useState(null)
+
+  useEffect(() => {
+    const chatId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id
+      || new URLSearchParams(window.location.search).get('chat_id')
+
+    if (!chatId) {
+      setAppStatus('new')
+      return
+    }
+
+    checkAnketa(chatId)
+      .then(async (status) => {
+        console.log('check response:', JSON.stringify(status))
+        const s = typeof status === 'string' ? status.trim() : String(status).trim()
+        console.log('check trimmed:', s, '| is 0:', s === '0')
+        if (s === '0') {
+          setAppStatus('new')
+        } else {
+          const data = await showAnketa(chatId).catch((e) => { console.log('show error:', e); return null })
+          console.log('show response:', data)
+          setExistingAnketa(data?.data || data || null)
+          setAppStatus('reviewing')
+        }
+      })
+      .catch((e) => { console.log('check error:', e); setAppStatus('new') })
+  }, [])
 
   const handleChange = (key, val) => {
     setFormData(prev => ({ ...prev, [key]: val }))
@@ -207,10 +268,27 @@ export default function App() {
     }
   }
 
+  if (appStatus === 'loading') return <LoadingScreen />
+
+  if (appStatus === 'reviewing') {
+    return (
+      <>
+        <Header step={0} onBack={() => {}} onReload={() => setShowReload(true)} />
+        {showReload && (
+          <ReloadModal
+            onConfirm={() => window.location.reload()}
+            onCancel={() => setShowReload(false)}
+          />
+        )}
+        <ReviewingScreen anketa={existingAnketa} />
+      </>
+    )
+  }
+
   if (submitted) {
     return (
       <>
-        <Header step={0} onBack={() => {}} />
+        <Header step={0} onBack={() => {}} onReload={() => {}} />
         <SuccessScreen />
       </>
     )
