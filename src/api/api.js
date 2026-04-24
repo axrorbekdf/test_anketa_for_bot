@@ -1,4 +1,4 @@
-const BASE = 'http://10.100.104.120:8008'
+const BASE = import.meta.env.VITE_BASE_URL
 
 export async function uploadImage(file) {
   const fd = new FormData()
