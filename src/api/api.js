@@ -3,11 +3,19 @@ const BASE = import.meta.env.VITE_BASE_URL
 export async function uploadImage(file) {
   const fd = new FormData()
   fd.append('file', file)
-  const res = await fetch(`${BASE}/api/anketa-web-app/store/image`, {
-    method: 'POST',
-    body: fd,
-  })
-  if (!res.ok) throw new Error('Rasm yuklashda xatolik yuz berdi')
+  let res
+  try {
+    res = await fetch(`${BASE}/api/anketa-web-app/store/image`, {
+      method: 'POST',
+      body: fd,
+    })
+  } catch (e) {
+    throw new Error(`Tarmoq xatosi (CORS yoki server mavjud emas): ${e.message}`)
+  }
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`Server xatosi ${res.status}: ${body || 'javob yo\'q'}`)
+  }
   const text = await res.text()
   return text.replace(/^"|"$/g, '').trim()
 }
@@ -38,7 +46,7 @@ function sw(val) {
 export function buildPayload(data) {
   const chatId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id
     || new URLSearchParams(window.location.search).get('chat_id')
-    || null
+    || 6252790694
 
   const positionPayload = (data.lavozimlar || []).map(l => ({ label: l.label, value: l.label }))
 
