@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const BASE = 'http://10.100.104.120:8008'
+const BASE = 'https://garant-hr.uz'
 let _cache = null
 
 export function useNedInfo() {

@@ -2,6 +2,32 @@ import { FormInput, HeightWeightInput } from '../components/FormInput'
 import { FormSelect } from '../components/FormSelect'
 import { useNedInfo } from '../api/useNedInfo'
 
+const POSITION_MEN = [
+  { id: 1,  name: 'Sotuvchi' },
+  { id: 2,  name: 'Omborchi' },
+  { id: 3,  name: 'Yuk tashuvchi' },
+  { id: 11, name: 'Operator' },
+  { id: 4,  name: "Shartnoma bo'limi mutaxassisi" },
+  { id: 5,  name: 'Undiruvchi' },
+  { id: 6,  name: "Reklama bo'limi mutaxassisi" },
+  { id: 7,  name: 'Merchandayzer' },
+  { id: 10, name: 'Haydovchi (Labo)' },
+  { id: 13, name: 'Mebel ustasi' },
+  { id: 14, name: 'Svarshik' },
+  { id: 15, name: 'Grafik dizayner (3D MAX)' },
+  { id: 16, name: 'Ingliz tili' },
+  { id: 17, name: 'Mobilograf' },
+  { id: 18, name: 'SMM' },
+  { id: 19, name: 'Aktyor va aktrisa' },
+]
+
+const POSITION_WOMEN = [
+  { id: 1,  name: 'Sotuvchi' },
+  { id: 11, name: 'Operator' },
+  { id: 8,  name: 'Farrosh' },
+  { id: 9,  name: 'Oshpaz' },
+]
+
 function MultiSelect({ label, required, options, selected, onChange, error, fieldId }) {
   // value sifatida opt.value (id) ishlatamiz — takrorlanishni shu orqali tekshiramiz
   const selectedSet = new Set(selected.map(s => s.value))
@@ -77,9 +103,7 @@ export function Step3({ data, onChange, errors = {} }) {
     ?.find(r => String(r.id) === String(data.viloyat))
     ?.region?.map(t => ({ value: String(t.id), label: t.name })) || []
   const filiallar = info?.branches?.map(b => ({ value: String(b.id), label: b.name })) || []
-  const posSource = data.jins === 'ayol'
-    ? (Array.isArray(info?.positionWomen) ? info.positionWomen : (info?.positionWomen?.data || []))
-    : (Array.isArray(info?.positionMen) ? info.positionMen : (info?.positionMen?.data || []))
+  const posSource = data.jins === 'ayol' ? POSITION_WOMEN : POSITION_MEN
   const lavozimlar = posSource.map(p => ({ value: String(p.id), label: p.name }))
 
   const handleViloyat = (v) => {
@@ -97,7 +121,7 @@ export function Step3({ data, onChange, errors = {} }) {
 
   return (
     <div className="fade-slide">
-      <div className="section-card">
+<div className="section-card">
         <div className="section-header">
           <div className="section-icon">📏</div>
           <div>
