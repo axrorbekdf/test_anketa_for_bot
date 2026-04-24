@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const BASE = import.meta.env.VITE_BASE_URL
+const BASE = 'https://garant-hr.uz'
 let _cache = null
 
 export function useNedInfo() {

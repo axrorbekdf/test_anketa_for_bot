@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_BASE_URL
+const BASE = 'https://garant-hr.uz'
 
 export async function uploadImage(file) {
   const fd = new FormData()
