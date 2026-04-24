@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const BASE = ''
+const BASE = import.meta.env.DEV ? '' : 'https://garant-hr.uz'
 let _cache = null
 
 export function useNedInfo() {

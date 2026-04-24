@@ -1,4 +1,4 @@
-const BASE = ''  // Vite proxy orqali — CORS yo'q
+const BASE = import.meta.env.DEV ? '' : 'https://garant-hr.uz'
 
 export async function checkAnketa(chatId) {
   const res = await fetch(`${BASE}/api/anketa-web-app/check/${chatId}`, {
