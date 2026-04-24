@@ -46,7 +46,7 @@ function sw(val) {
 export function buildPayload(data) {
   const chatId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id
     || new URLSearchParams(window.location.search).get('chat_id')
-    || 6252790694
+    || null
 
   const positionPayload = (data.lavozimlar || []).map(l => ({ label: l.label, value: l.label }))
 
