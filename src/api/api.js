@@ -5,7 +5,17 @@ export async function checkAnketa(chatId) {
     headers: { 'Accept': 'application/json' },
   })
   if (!res.ok) throw new Error(`Server xatosi: ${res.status}`)
-  return res.text()
+  const text = await res.text()
+  try {
+    const json = JSON.parse(text)
+    // {"data": "0"} yoki {"status": "0"} yoki to'g'ridan-to'g'ri "0" (JSON string)
+    if (typeof json === 'object' && json !== null) {
+      return String(json.data ?? json.status ?? json).trim()
+    }
+    return String(json).trim()
+  } catch {
+    return text.trim()
+  }
 }
 
 export async function showAnketa(chatId) {
