@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { uploadImage } from '../api/api'
 
 function ImagePreview({ url, onRemove }) {
@@ -23,6 +23,7 @@ function ImagePreview({ url, onRemove }) {
 export function FileUpload({ label, required, value, previewUrl, onChange, error, fieldId }) {
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState(null)
+  const inputRef = useRef(null)
 
   const handleFile = async (file) => {
     if (!file) return
@@ -40,6 +41,14 @@ export function FileUpload({ label, required, value, previewUrl, onChange, error
 
   const handleRemove = () => onChange(null, null)
 
+  const openPicker = () => {
+    if (loading) return
+    if (inputRef.current) {
+      inputRef.current.value = ''
+      inputRef.current.click()
+    }
+  }
+
   return (
     <div className="field" id={fieldId}>
       {label && (
@@ -51,18 +60,22 @@ export function FileUpload({ label, required, value, previewUrl, onChange, error
       {previewUrl ? (
         <ImagePreview url={previewUrl} onRemove={handleRemove} />
       ) : (
-        <label className={`file-upload${loading ? ' loading' : ''}${error ? ' error' : ''}`}
-          style={error ? { borderColor: 'var(--danger)' } : {}}>
+        <div
+          className={`file-upload${loading ? ' loading' : ''}${error ? ' error' : ''}`}
+          style={{ cursor: loading ? 'default' : 'pointer', ...(error ? { borderColor: 'var(--danger)' } : {}) }}
+          onClick={openPicker}
+        >
           <input
+            ref={inputRef}
             type="file"
-            accept="image/*,.heic,.HEIC"
+            accept="image/*"
+            style={{ display: 'none' }}
             onChange={e => handleFile(e.target.files[0] || null)}
-            disabled={loading}
           />
           <span className="file-upload-icon">{loading ? '⏳' : '☁️'}</span>
           <span className="file-upload-text">{loading ? 'Yuklanmoqda...' : 'Rasm yuklang'}</span>
           {!loading && <span className="file-upload-hint">PNG, JPG, JPEG, WEBP va HEIC ruxsat etilgan</span>}
-        </label>
+        </div>
       )}
       {(err || error) && (
         <span style={{ fontSize: 12, color: 'var(--danger)', marginTop: 2 }}>⚠ {err || error}</span>
