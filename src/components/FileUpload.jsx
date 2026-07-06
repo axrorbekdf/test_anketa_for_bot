@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { uploadImage } from '../api/api'
 
 function ImagePreview({ url, onRemove }) {
@@ -23,10 +23,11 @@ function ImagePreview({ url, onRemove }) {
 export function FileUpload({ label, required, value, previewUrl, onChange, error, fieldId }) {
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState(null)
-  const inputRef = useRef(null)
+  const [inputKey, setInputKey] = useState(0)
 
   const handleFile = async (file) => {
     if (!file) return
+    setInputKey(k => k + 1)
     setErr(null)
     setLoading(true)
     try {
@@ -41,14 +42,6 @@ export function FileUpload({ label, required, value, previewUrl, onChange, error
 
   const handleRemove = () => onChange(null, null)
 
-  const openPicker = () => {
-    if (loading) return
-    if (inputRef.current) {
-      inputRef.current.value = ''
-      inputRef.current.click()
-    }
-  }
-
   return (
     <div className="field" id={fieldId}>
       {label && (
@@ -62,16 +55,25 @@ export function FileUpload({ label, required, value, previewUrl, onChange, error
       ) : (
         <div
           className={`file-upload${loading ? ' loading' : ''}${error ? ' error' : ''}`}
-          style={{ cursor: loading ? 'default' : 'pointer', ...(error ? { borderColor: 'var(--danger)' } : {}) }}
-          onClick={openPicker}
+          style={{ position: 'relative', ...(error ? { borderColor: 'var(--danger)' } : {}) }}
         >
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={e => handleFile(e.target.files[0] || null)}
-          />
+          {!loading && (
+            <input
+              key={inputKey}
+              type="file"
+              accept="image/*"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                opacity: 0,
+                width: '100%',
+                height: '100%',
+                cursor: 'pointer',
+                zIndex: 1,
+              }}
+              onChange={e => handleFile(e.target.files[0] || null)}
+            />
+          )}
           <span className="file-upload-icon">{loading ? '⏳' : '☁️'}</span>
           <span className="file-upload-text">{loading ? 'Yuklanmoqda...' : 'Rasm yuklang'}</span>
           {!loading && <span className="file-upload-hint">PNG, JPG, JPEG, WEBP va HEIC ruxsat etilgan</span>}
