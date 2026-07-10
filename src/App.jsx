@@ -7,6 +7,7 @@ import { Step5 } from './steps/Step5'
 import { Step6 } from './steps/Step6'
 import { validateStep } from './utils/validation'
 import { submitAnketa, buildPayload, checkAnketa, showAnketa } from './api/api'
+import { AnketaView } from './components/AnketaView'
 
 const STEPS = [
   { label: 'Shaxsiy', short: '1' },
@@ -146,18 +147,80 @@ function LoadingScreen() {
   )
 }
 
-function ReviewingScreen({ anketa }) {
-  const fullName = [anketa?.first_name, anketa?.last_name, anketa?.father_name].filter(Boolean).join(' ')
+const STATUS_CONFIG = {
+  '1': { emoji: '⏳', title: "Ko'rib chiqilmoqda",       sub: 'Yuborildi, javob kutilmoqda',             color: '#2563EB' },
+  '2': { emoji: '📞', title: 'Suhbatga chaqirildingiz!', sub: "Telegram yoki telefon orqali bog'lanamiz", color: '#7C3AED' },
+  '3': { emoji: '✅', title: "Suhbat o'tkazildi",        sub: 'Natija kutilmoqda',                       color: '#059669' },
+  '4': { emoji: '🎉', title: 'Tabriklaymiz!',            sub: 'Siz ishga qabul qilindingiz',             color: '#D97706' },
+}
+
+function StatusBanner({ anketa, status }) {
+  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG['1']
+  const fullName = [anketa?.first_name, anketa?.last_name].filter(Boolean).join(' ')
   return (
-    <div className="success-screen fade-slide">
-      <span className="success-emoji">📋</span>
-      <div className="success-title">Anketa topshirilgan</div>
-      <p className="success-desc">
-        {fullName && <><strong>{fullName}</strong>,<br /></>}
-        Anketangiz ko'rib chiqilmoqda.<br />
-        Tez orada siz bilan bog'lanamiz.
-      </p>
-      <div className="info-box" style={{ maxWidth: 300 }}>
+    <div style={{
+      background: cfg.color, borderRadius: 16, padding: '20px 16px',
+      marginBottom: 12, textAlign: 'center', color: '#fff',
+    }}>
+      <div style={{ fontSize: 36, marginBottom: 8 }}>{cfg.emoji}</div>
+      <div style={{ fontSize: 16, fontWeight: 700 }}>{cfg.title}</div>
+      {fullName && <div style={{ fontSize: 14, opacity: 0.9, marginTop: 4 }}>{fullName}</div>}
+      <div style={{
+        display: 'inline-block', marginTop: 10,
+        background: 'rgba(255,255,255,0.2)', borderRadius: 20,
+        padding: '4px 14px', fontSize: 12, fontWeight: 600,
+      }}>
+        {cfg.sub}
+      </div>
+      <div style={{ marginTop: 14, fontSize: 12, opacity: 0.8 }}>
+        Savollar uchun: <a style={{ color: '#fff', fontWeight: 700 }} href="https://t.me/Yordam">@Yordam</a>
+      </div>
+    </div>
+  )
+}
+
+function RefillBanner({ description }) {
+  return (
+    <div style={{
+      background: '#FEF3C7', border: '1.5px solid #FCD34D',
+      borderRadius: 12, padding: '12px 14px', marginBottom: 14,
+    }}>
+      <div style={{ fontWeight: 700, color: '#92400E', marginBottom: 4, fontSize: 14 }}>
+        ⚠️ Anketa qayta to'ldirishga yuborildi
+      </div>
+      {description ? (
+        <div style={{
+          fontSize: 13, color: '#78350F', lineHeight: 1.5,
+          background: 'rgba(0,0,0,0.06)', borderRadius: 8,
+          padding: '8px 10px', marginTop: 6,
+        }}>
+          <span style={{ fontWeight: 600 }}>HR izohi: </span>{description}
+        </div>
+      ) : (
+        <div style={{ fontSize: 13, color: '#78350F', lineHeight: 1.5 }}>
+          Ma'lumotlaringizni tekshirib, to'g'rilab qayta yuboring.
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CancelledScreen({ anketa }) {
+  const fullName = [anketa?.first_name, anketa?.last_name].filter(Boolean).join(' ')
+  return (
+    <div style={{ padding: '40px 16px', textAlign: 'center' }}>
+      <div style={{ fontSize: 48, marginBottom: 12 }}>❌</div>
+      <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>
+        Anketa rad etildi
+      </div>
+      {fullName && (
+        <div style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 12 }}>{fullName}</div>
+      )}
+      <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 20 }}>
+        Afsuski, sizning anketangiz ko'rib chiqildi va rad etildi.<br />
+        Qo'shimcha ma'lumot uchun quyidagi manziliga murojaat qiling.
+      </div>
+      <div className="info-box" style={{ maxWidth: 300, margin: '0 auto' }}>
         <span className="info-box-icon">💬</span>
         <span className="info-box-text">
           Savollar uchun: <a className="tg-link" href="https://t.me/Yordam">@Yordam</a>
@@ -165,6 +228,111 @@ function ReviewingScreen({ anketa }) {
       </div>
     </div>
   )
+}
+
+const MARTIAL_MAP = {
+  'Оила_қурган':      'Oila qurgan',
+  'Оила_қурмаган':    'Oila qurmagan',
+  'Турмуш_курмаган':  'Oila qurmagan',
+  'Ажрашган':         'Ajrashgan',
+  'Бева':             'Beva',
+}
+
+const EDUCATION_MAP = {
+  "Бошланғич":   "Boshlang'ich",
+  "Ўрта":        "O'rta",
+  "Ўрта-махсус": "O'rta-maxsus",
+  "Бакалавр":    "Oliy (bakalavr)",
+  "Магистр":     "Oliy (magistr)",
+  "Докторантура": "Doktorantura",
+}
+
+const TYPE_EDU_MAP = {
+  "Кундузги": "kunduzgi",
+  "Сиртқи":   "sirtqi",
+  "Кечки":    "kechki",
+}
+
+const LANG_MAP = {
+  "Ўзбек":   "O'zbek",
+  "Рус":     "Rus",
+  "Инглиз":  "Ingliz",
+  "Француз": "Fransuz",
+  "Немис":   "Nemis",
+  "Араб":    "Arab",
+  "Хитой":   "Xitoy",
+  "Турк":    "Turk",
+  "Корейс":  "Koreys",
+  "Япон":    "Yapon",
+  "Испан":   "Ispan",
+  "Итальян": "Italyan",
+}
+
+function mapAnketaToForm(a) {
+  const yn = (v) => v === '1' || v === 1 ? 'ha' : v === '2' || v === 2 ? "yo'q" : ''
+  const pasportTuri = a.pasport_type === 'Оддий' ? 'biometrik' : a.pasport_type === 'ID карта' ? 'id_karta' : ''
+  const oilaviyHolat  = MARTIAL_MAP[a.martial_status]  ?? a.martial_status  ?? ''
+  const malumot       = EDUCATION_MAP[a.education]     ?? a.education       ?? ''
+  const typeEducation = TYPE_EDU_MAP[a.type_education] ?? a.type_education  ?? ''
+  return {
+    ism:              a.first_name || '',
+    familiya:         a.last_name || '',
+    otaIsmi:          a.father_name || '',
+    jins:             a.gender === '1' || a.gender === 1 ? 'erkak' : a.gender === '2' || a.gender === 2 ? 'ayol' : '',
+    tugSana:          a.age || '',
+    oilaviyHolat,
+    farzandlar:       a.anketa_childrens || [],
+    oilaviyTarkib:    a.anketa_relations || [],
+    malumot,
+    talabaMi:         a.now_study || '',
+    typeEducation,
+    talimMuassasalar: (a.education_place || []).map(e => ({
+      id:         e.id ?? null,
+      name:       e.education_name || '',
+      start_date: e.start_date || '',
+      end_date:   e.end_date || '',
+      specialty:  e.specialty || '',
+    })),
+    tillar:           (a.anketa_languages || []).map(l => ({
+      id:    l.id ?? null,
+      name:  LANG_MAP[l.name] ?? l.name ?? '',
+      level: l.level ?? '',
+    })),
+    boyVazn:          a.height || '',
+    viloyat:          String(a.state_id || ''),
+    tuman:            String(a.region_id || ''),
+    manzil:           a.address || '',
+    filial:           String(a.branch_id || ''),
+    lavozimlar:       Array.isArray(a.position) ? a.position : [],
+    qoshimchaTel:     a.eddition_phone_number || '',
+    fuqaro:           yn(a.citizen),
+    ishBilanTaminlangan: yn(a.job_now),
+    workedPlace:      a.worked_place || '',
+    garantQarindosh:  a.relation_company || '',
+    avvalIshlagan:    yn(a.worked_company),
+    ishTarixi:        a.anketa_worked_befores || [],
+    dasturlar:        a.anketa_progs || [],
+    soglik:           a.anketa_healthys || [],
+    qoshimcha:        a.other_info && a.other_info !== '-' ? a.other_info : '',
+    oxirgiMaosh:      a.salary_last_job || '',
+    xohlganMaosh:     a.payload || '',
+    avtomobil:        yn(a.is_car),
+    avtomobilRusumi:  a.about_car || '',
+    trip:             a.trip ? yn(a.trip) : '',
+    qaydanBildi:      a.about_vacancy || '',
+    sudlangan:        yn(a.whether_convicted),
+    sudlanganIzoh:    a.whether_convicted_description || '',
+    shaxsiyRasm:      null,
+    shaxsiyRasmUrl:   a.image || null,
+    pasportTuri,
+    pasportRasm:      null,
+    pasportRasmUrl:   pasportTuri === 'biometrik' ? (a.pasport_image_first || null) : null,
+    idKartaOld:       null,
+    idKartaOldUrl:    pasportTuri === 'id_karta'  ? (a.pasport_image_first || null) : null,
+    idKartaOrqa:      null,
+    idKartaOrqaUrl:   a.pasport_image_second || null,
+    roziman:          false,
+  }
 }
 
 export default function App() {
@@ -175,8 +343,9 @@ export default function App() {
   const [submitError, setSubmitError] = useState(null)
   const [submitted, setSubmitted] = useState(false)
   const [showReload, setShowReload] = useState(false)
-  const [appStatus, setAppStatus] = useState('loading') // 'loading' | 'new' | 'reviewing'
+  const [appStatus, setAppStatus] = useState('loading') // 'loading'|'new'|'refill'|'reviewing'|'hired'|'cancelled'
   const [existingAnketa, setExistingAnketa] = useState(null)
+  const [anketaStatus, setAnketaStatus] = useState(null) // '0'|'1'|'2'|'3'|'4'
 
   useEffect(() => {
     const chatId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id
@@ -189,19 +358,46 @@ export default function App() {
 
     checkAnketa(chatId)
       .then(async (status) => {
-        console.log('check response:', JSON.stringify(status))
-        const s = typeof status === 'string' ? status.trim() : String(status).trim()
-        console.log('check trimmed:', s, '| is 0:', s === '0')
-        if (s === '0') {
-          setAppStatus('new')
-        } else {
-          const data = await showAnketa(chatId).catch((e) => { console.log('show error:', e); return null })
-          console.log('show response:', data)
-          setExistingAnketa(data?.data || data || null)
-          setAppStatus('reviewing')
+        const s = String(status).trim()
+        setAnketaStatus(s)
+
+        const data = await showAnketa(chatId).catch(() => null)
+        const anketa = data?.data || data || null
+        setExistingAnketa(anketa)
+
+        // 1. Rad etilgan (har qanday statusda bo'lsa ham)
+        if (String(anketa?.anketa_cancel_manager) === '2') {
+          setAppStatus('cancelled')
+          return
         }
+
+        // 2. HR qayta to'ldirishga yuborgan
+        if (String(anketa?.replay_status) === '2') {
+          setFormData(mapAnketaToForm(anketa))
+          setAppStatus('refill')
+          return
+        }
+
+        // 3. Asosiy status bo'yicha routing
+        if (s === '4') {
+          setAppStatus('hired')
+          return
+        }
+
+        if (s === '0') {
+          if (anketa?.first_name) {
+            setFormData(mapAnketaToForm(anketa))
+            setAppStatus('refill')
+          } else {
+            setAppStatus('new')
+          }
+          return
+        }
+
+        // status 1, 2, 3
+        setAppStatus('reviewing')
       })
-      .catch((e) => { console.log('check error:', e); setAppStatus('new') })
+      .catch(() => setAppStatus('new'))
   }, [])
 
   const handleChange = (key, val) => {
@@ -280,7 +476,33 @@ export default function App() {
             onCancel={() => setShowReload(false)}
           />
         )}
-        <ReviewingScreen anketa={existingAnketa} />
+        <main className="page-body">
+          <StatusBanner anketa={existingAnketa} status={anketaStatus} />
+          <AnketaView anketa={existingAnketa} />
+        </main>
+      </>
+    )
+  }
+
+  if (appStatus === 'hired') {
+    return (
+      <>
+        <Header step={0} onBack={() => {}} onReload={() => {}} />
+        <main className="page-body">
+          <StatusBanner anketa={existingAnketa} status="4" />
+          <AnketaView anketa={existingAnketa} />
+        </main>
+      </>
+    )
+  }
+
+  if (appStatus === 'cancelled') {
+    return (
+      <>
+        <Header step={0} onBack={() => {}} onReload={() => {}} />
+        <main className="page-body">
+          <CancelledScreen anketa={existingAnketa} />
+        </main>
       </>
     )
   }
@@ -306,6 +528,9 @@ export default function App() {
       )}
 
       <main className="page-body">
+        {appStatus === 'refill' && (
+          <RefillBanner description={existingAnketa?.replay_status_description} />
+        )}
         {submitError && (
           <div style={{
             background: '#FEF2F2', border: '1.5px solid #FECACA',
