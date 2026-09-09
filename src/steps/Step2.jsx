@@ -28,18 +28,9 @@ const TIL_LEVELS = [
   "60%", "70%", "80%", "90%", "100%",
 ]
 
-function tilLevelOptions(rows, rowIndex) {
-  const usedByOthers = rows.reduce((sum, r, i) => {
-    if (i === rowIndex) return sum
-    return sum + (parseInt(r.level) || 0)
-  }, 0)
-  const remaining = 100 - usedByOthers
-  return TIL_LEVELS.filter(l => parseInt(l) <= remaining)
-}
-
 const TIL_FIELDS = [
   { key: 'name', label: 'Til', type: 'select', options: COMMON_LANGS },
-  { key: 'level', label: 'Daraja', type: 'select', options: tilLevelOptions },
+  { key: 'level', label: 'Daraja', type: 'select', options: TIL_LEVELS },
 ]
 
 // talabaMi: backend 1 = ha, 2 = yo'q

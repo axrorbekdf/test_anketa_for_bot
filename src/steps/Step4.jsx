@@ -9,26 +9,19 @@ const HA_YOQ = [
   { value: "yo'q", label: "Yo'q", icon: '❌' },
 ]
 
-const DASTUR_LEVELS = Array.from({ length: 9 }, (_, i) => `${(i + 1) * 12}%`)
-const DASTUR_LEVEL_OPTS = [...DASTUR_LEVELS, '100%']
+const DASTUR_LEVELS = [
+  "10%", "20%", "30%", "40%", "50%",
+  "60%", "70%", "80%", "90%", "100%",
+]
 
 const COMMON_PROGRAMS = [
   'Excel', 'Word', 'PowerPoint', '1C', 'SAP',
   'Google Sheets', 'Outlook', 'Access', '1C Buxgalteriya',
 ]
 
-function dasturLevelOptions(rows, rowIndex) {
-  const usedByOthers = rows.reduce((sum, r, i) => {
-    if (i === rowIndex) return sum
-    return sum + (parseInt(r.level) || 0)
-  }, 0)
-  const remaining = 100 - usedByOthers
-  return DASTUR_LEVEL_OPTS.filter(l => parseInt(l) <= remaining)
-}
-
 const DASTUR_FIELDS = [
   { key: 'name', label: 'Dastur nomi', type: 'select', options: COMMON_PROGRAMS },
-  { key: 'level', label: 'Daraja', type: 'select', options: dasturLevelOptions },
+  { key: 'level', label: 'Daraja', type: 'select', options: DASTUR_LEVELS },
 ]
 
 const AVTOMOBIL_RUSUMI = [
