@@ -23,7 +23,7 @@ const INITIAL = {
   farzandlar: [], oilaviyTarkib: [],
   malumot: '', talabaMi: '', talimMuassasalar: [], tillar: [],
   boyVazn: '', viloyat: '', tuman: '', manzil: '', filial: '', lavozimlar: [],
-  avvalIshlagan: '', fuqaro: '', ishBilanTaminlangan: '', garantQarindosh: '', dasturlar: [],
+  avvalIshlagan: '', fuqaro: '', ishBilanTaminlangan: '', caslFitQarindosh: '', dasturlar: [],
   soglik: [], qoshimcha: '', ishTarixi: [],
   oxirgiMaosh: '', xohlganMaosh: '', avtomobil: '', avtomobilRusumi: '', trip: '', qaydanBildi: '', sudlangan: '', sudlanganIzoh: '',
   qoshimchaTel: '',
@@ -82,7 +82,7 @@ function Header({ step, onBack, onReload }) {
     <header className="header">
       <button className="header-back" onClick={onBack} disabled={step === 0}>‹</button>
       <div className="header-center">
-        <div className="header-title">Garant Anketa</div>
+        <div className="header-title">Casl Fit Anketa</div>
         <div className="header-sub">mini ilova</div>
       </div>
       <button className="header-menu" onClick={onReload}>↺</button>
@@ -123,7 +123,7 @@ function SuccessScreen() {
       <p className="success-desc">
         Anketangiz muvaffaqiyatli yuborildi.<br />
         Tez orada siz bilan bog'lanamiz.<br />
-        <strong>Garant kompaniyasi</strong> sizga minnatdor!
+        <strong>Casl Fit kompaniyasi</strong> sizga minnatdor!
       </p>
       <div className="info-box" style={{ maxWidth: 300 }}>
         <span className="info-box-icon">💬</span>
@@ -308,7 +308,7 @@ function mapAnketaToForm(a) {
     fuqaro:           yn(a.citizen),
     ishBilanTaminlangan: yn(a.job_now),
     workedPlace:      a.worked_place || '',
-    garantQarindosh:  a.relation_company || '',
+    caslFitQarindosh:  a.relation_company || '',
     avvalIshlagan:    yn(a.worked_company),
     ishTarixi:        a.anketa_worked_befores || [],
     dasturlar:        a.anketa_progs || [],

@@ -230,8 +230,8 @@ export function AnketaView({ anketa }) {
         <Field label="Fuqaro" value={yn(anketa?.citizen)} />
         <Field label="Hozir ishlayaptimi" value={yn(anketa?.job_now)} />
         <Field label="Hozirgi ish joyi" value={anketa?.worked_place} />
-        <Field label="Garant xodimi qarindoshi" value={dash(anketa?.relation_company)} />
-        <Field label="Garantda avval ishlagan" value={yn(anketa?.worked_company)} />
+        <Field label="Casl Fit xodimi qarindoshi" value={dash(anketa?.relation_company)} />
+        <Field label="Casl Fitda avval ishlagan" value={yn(anketa?.worked_company)} />
         {anketa?.anketa_worked_befores?.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600 }}>Ish tarixi</span>

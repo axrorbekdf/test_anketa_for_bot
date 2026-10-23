@@ -93,7 +93,7 @@ export function Step4({ data, onChange, errors = {} }) {
         <div className="section-header">
           <div className="section-icon">👥</div>
           <div>
-            <div className="section-title">GARANT kompaniyasida ishlaydigan yaqinlaringiz bormi?</div>
+            <div className="section-title">CASL FIT kompaniyasida ishlaydigan yaqinlaringiz bormi?</div>
             <div className="section-desc">Kompaniyamizda ishlaydigan yaqinlaringiz</div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export function Step4({ data, onChange, errors = {} }) {
           <FormTextarea
             label="Yaqin qarindoshingiz bormi?"
             placeholder="To'liq ismi, familiyasi va lavozimini yozing. Yo'q bo'lsa bo'sh qoldiring"
-            value={data.garantQarindosh} onChange={v => onChange('garantQarindosh', v)}
+            value={data.caslFitQarindosh} onChange={v => onChange('caslFitQarindosh', v)}
           />
         </div>
       </div>

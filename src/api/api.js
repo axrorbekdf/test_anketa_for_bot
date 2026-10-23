@@ -121,7 +121,7 @@ export function buildPayload(data) {
     about_car: data.avtomobilRusumi || null,
     // trip: faqat erkak uchun, ha=1, yo'q=2
     trip: data.jins === 'erkak' ? sw(data.trip) : null,
-    relation_company: data.garantQarindosh || "Yo'q",
+    relation_company: data.caslFitQarindosh || "Yo'q",
     // worked_company: ha=1, yo'q=2
     worked_company: sw(data.avvalIshlagan),
     // whether_convicted: ha=1, yo'q=2
