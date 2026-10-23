@@ -1,4 +1,4 @@
-const BASE = import.meta.env.DEV ? '' : 'https://garant-hr.uz'
+const BASE = import.meta.env.DEV ? '' : import.meta.env.VITE_BASE_URL
 
 export async function checkAnketa(chatId) {
   const res = await fetch(`${BASE}/api/anketa-web-app/check/${chatId}`, {
