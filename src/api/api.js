@@ -1,8 +1,10 @@
-const BASE = import.meta.env.DEV ? '' : import.meta.env.VITE_BASE_URL
+export const BASE = import.meta.env.DEV ? '' : import.meta.env.VITE_BASE_URL
+// ngrok bepul tarifida brauzerga ogohlantirish sahifasi chiqmasligi uchun
+export const HEADERS = { 'Accept': 'application/json', 'ngrok-skip-browser-warning': 'true' }
 
 export async function checkAnketa(chatId) {
   const res = await fetch(`${BASE}/api/anketa-web-app/check/${chatId}`, {
-    headers: { 'Accept': 'application/json' },
+    headers: HEADERS,
   })
   if (!res.ok) throw new Error(`Server xatosi: ${res.status}`)
   const text = await res.text()
@@ -20,7 +22,7 @@ export async function checkAnketa(chatId) {
 
 export async function showAnketa(chatId) {
   const res = await fetch(`${BASE}/api/anketa-web-app/show/${chatId}`, {
-    headers: { 'Accept': 'application/json' },
+    headers: HEADERS,
   })
   if (!res.ok) throw new Error(`Server xatosi: ${res.status}`)
   return res.json()
@@ -33,7 +35,7 @@ export async function uploadImage(file) {
   try {
     res = await fetch(`${BASE}/api/anketa-web-app/store/image`, {
       method: 'POST',
-      headers: { 'Accept': 'application/json' },
+      headers: HEADERS,
       body: fd,
     })
   } catch (e) {
@@ -50,7 +52,7 @@ export async function uploadImage(file) {
 export async function submitAnketa(payload) {
   const res = await fetch(`${BASE}/api/anketa-web-app/create`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    headers: { ...HEADERS, 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
   if (!res.ok) {

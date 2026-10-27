@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
+import { BASE, HEADERS } from './api'
 
-const BASE = import.meta.env.DEV ? '' : import.meta.env.VITE_BASE_URL
 let _cache = null
 
 export function useNedInfo() {
@@ -9,7 +9,7 @@ export function useNedInfo() {
 
   useEffect(() => {
     if (_cache) return
-    fetch(`${BASE}/api/new-anketa/ned-info`, { headers: { 'Accept': 'application/json' } })
+    fetch(`${BASE}/api/new-anketa/ned-info`, { headers: HEADERS })
       .then(r => {
         if (!r.ok) throw new Error(`ned-info: ${r.status}`)
         return r.json()
