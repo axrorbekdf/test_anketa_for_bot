@@ -445,6 +445,15 @@ export default function App() {
       setSubmitted(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (e) {
+      // 409: anketa allaqachon ko'rib chiqilmoqda
+      if (e.code === 409) {
+        const chatId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id
+          || new URLSearchParams(window.location.search).get('chat_id')
+        const data = chatId ? await showAnketa(chatId).catch(() => null) : null
+        setExistingAnketa(data?.data || data || null)
+        setAppStatus('reviewing')
+        return
+      }
       setSubmitError({ message: e.message, detail: e.detail || null, code: e.code || null })
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } finally {

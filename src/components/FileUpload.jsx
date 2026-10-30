@@ -1,10 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { uploadImage } from '../api/api'
 
-function ImagePreview({ url, onRemove }) {
+function ImagePreview({ url, localUrl, onRemove }) {
+  // Serverdagi rasm ichki tarmoqda (http://192.168...) bo'lishi mumkin, shuning uchun
+  // avval qurilmadagi faylni ko'rsatamiz; brauzer ocholmasa (masalan HEIC) server URL'iga o'tamiz
+  const [src, setSrc] = useState(localUrl || url)
+  useEffect(() => setSrc(localUrl || url), [localUrl, url])
+
   return (
     <div style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', border: '2px solid var(--success)' }}>
-      <img src={url} alt="preview" style={{ width: '100%', maxHeight: 200, objectFit: 'cover', display: 'block' }} />
+      <img
+        src={src} alt="preview"
+        onError={() => { if (src !== url) setSrc(url) }}
+        style={{ width: '100%', maxHeight: 200, objectFit: 'cover', display: 'block' }}
+      />
       <button
         type="button"
         onClick={onRemove}
@@ -24,6 +33,9 @@ export function FileUpload({ label, required, value, previewUrl, onChange, error
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState(null)
   const [inputKey, setInputKey] = useState(0)
+  const [localUrl, setLocalUrl] = useState(null)
+
+  useEffect(() => () => { if (localUrl) URL.revokeObjectURL(localUrl) }, [localUrl])
 
   const handleFile = async (file) => {
     if (!file) return
@@ -32,15 +44,21 @@ export function FileUpload({ label, required, value, previewUrl, onChange, error
     setLoading(true)
     try {
       const url = await uploadImage(file)
+      setLocalUrl(URL.createObjectURL(file))
       onChange(file, url)
     } catch (e) {
+      // yuklanmasa maydon bo'sh qoladi
+      onChange(null, null)
       setErr(e.message)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleRemove = () => onChange(null, null)
+  const handleRemove = () => {
+    setLocalUrl(null)
+    onChange(null, null)
+  }
 
   return (
     <div className="field" id={fieldId}>
@@ -51,7 +69,7 @@ export function FileUpload({ label, required, value, previewUrl, onChange, error
         </label>
       )}
       {previewUrl ? (
-        <ImagePreview url={previewUrl} onRemove={handleRemove} />
+        <ImagePreview url={previewUrl} localUrl={localUrl} onRemove={handleRemove} />
       ) : (
         <div
           className={`file-upload${loading ? ' loading' : ''}${error ? ' error' : ''}`}
