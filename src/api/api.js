@@ -39,17 +39,15 @@ export async function uploadImage(file) {
       body: fd,
     })
   } catch (e) {
-    throw new Error(`Tarmoq xatosi (CORS yoki server mavjud emas): ${e.message}`)
+    throw new Error("Internet aloqasi yo'q, qaytadan urinib ko'ring.")
   }
-  if (!res.ok) {
-    const body = await res.text().catch(() => '')
-    throw new Error(`Server xatosi ${res.status}: ${body || 'javob yo\'q'}`)
+  // { status, code, message, data: { url, path, name, size, mime } }
+  const body = await res.json().catch(() => null)
+  if (res.ok && body?.status === true && body.data?.url) {
+    return body.data.url
   }
-  const text = await res.text()
-  const url = text.replace(/^"|"$/g, '').trim()
-  // backend saqlay olmasa "0" yoki bo'sh javob qaytaradi
-  if (!url || url === '0') throw new Error('Rasm serverga saqlanmadi, qaytadan urinib ko\'ring')
-  return url
+  // 422 VALIDATION_ERROR / 500 UPLOAD_FAILED
+  throw new Error(body?.message || `Rasm yuklanmadi (xato ${res.status}).`)
 }
 
 export async function submitAnketa(payload) {
@@ -61,8 +59,10 @@ export async function submitAnketa(payload) {
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     const e = new Error(err?.message || `Server xatosi: ${res.status}`)
-    e.detail = err?.error || null
-    e.code = err?.code || res.status
+    // 422 da errors: { field: [msg, ...] }
+    const fieldErrors = err?.errors ? Object.values(err.errors).flat().join('\n') : null
+    e.detail = err?.error || fieldErrors || null
+    e.code = res.status
     throw e
   }
   return res.json()
