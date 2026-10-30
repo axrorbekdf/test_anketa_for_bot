@@ -46,7 +46,10 @@ export async function uploadImage(file) {
     throw new Error(`Server xatosi ${res.status}: ${body || 'javob yo\'q'}`)
   }
   const text = await res.text()
-  return text.replace(/^"|"$/g, '').trim()
+  const url = text.replace(/^"|"$/g, '').trim()
+  // backend saqlay olmasa "0" yoki bo'sh javob qaytaradi
+  if (!url || url === '0') throw new Error('Rasm serverga saqlanmadi, qaytadan urinib ko\'ring')
+  return url
 }
 
 export async function submitAnketa(payload) {
