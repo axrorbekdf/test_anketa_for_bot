@@ -5,15 +5,24 @@ function ImagePreview({ url, localUrl, onRemove }) {
   // Serverdagi rasm ichki tarmoqda (http://192.168...) bo'lishi mumkin, shuning uchun
   // avval qurilmadagi faylni ko'rsatamiz; brauzer ocholmasa (masalan HEIC) server URL'iga o'tamiz
   const [src, setSrc] = useState(localUrl || url)
-  useEffect(() => setSrc(localUrl || url), [localUrl, url])
+  const [failed, setFailed] = useState(false)
+  useEffect(() => { setSrc(localUrl || url); setFailed(false) }, [localUrl, url])
 
   return (
     <div style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', border: '2px solid var(--success)' }}>
-      <img
-        src={src} alt="preview"
-        onError={() => { if (src !== url) setSrc(url) }}
-        style={{ width: '100%', maxHeight: 200, objectFit: 'cover', display: 'block' }}
-      />
+      {failed ? (
+        // qayta to'ldirishda: rasm serverda bor, lekin qurilmadan ochib bo'lmadi
+        <div style={{ padding: '28px 12px', textAlign: 'center', fontSize: 13, color: 'var(--success)' }}>
+          ✅ Rasm avval yuklangan<br />
+          <span style={{ fontSize: 12, opacity: 0.8 }}>Almashtirish uchun ✕ ni bosib, yangisini yuklang</span>
+        </div>
+      ) : (
+        <img
+          src={src} alt="preview"
+          onError={() => { if (src !== url) setSrc(url); else setFailed(true) }}
+          style={{ width: '100%', maxHeight: 200, objectFit: 'cover', display: 'block' }}
+        />
+      )}
       <button
         type="button"
         onClick={onRemove}
