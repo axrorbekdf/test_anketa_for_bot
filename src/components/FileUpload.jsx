@@ -1,27 +1,32 @@
 import { useState, useEffect } from 'react'
 import { uploadImage } from '../api/api'
+import { useImageSrc } from '../api/useImageSrc'
 
 function ImagePreview({ url, localUrl, onRemove }) {
-  // Serverdagi rasm ichki tarmoqda (http://192.168...) bo'lishi mumkin, shuning uchun
-  // avval qurilmadagi faylni ko'rsatamiz; brauzer ocholmasa (masalan HEIC) server URL'iga o'tamiz
-  const [src, setSrc] = useState(localUrl || url)
-  const [failed, setFailed] = useState(false)
-  useEffect(() => { setSrc(localUrl || url); setFailed(false) }, [localUrl, url])
+  // Avval qurilmadagi faylni ko'rsatamiz; u bo'lmasa (qayta to'ldirish) yoki brauzer
+  // ocholmasa (masalan HEIC) serverdagi rasmni backend proxy'si orqali olamiz
+  const [localFailed, setLocalFailed] = useState(false)
+  useEffect(() => setLocalFailed(false), [localUrl])
+  const remote = useImageSrc(url)
+  const src = localUrl && !localFailed ? localUrl : remote.src
 
   return (
     <div style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', border: '2px solid var(--success)' }}>
-      {failed ? (
-        // qayta to'ldirishda: rasm serverda bor, lekin qurilmadan ochib bo'lmadi
-        <div style={{ padding: '28px 12px', textAlign: 'center', fontSize: 13, color: 'var(--success)' }}>
-          ✅ Rasm avval yuklangan<br />
-          <span style={{ fontSize: 12, opacity: 0.8 }}>Almashtirish uchun ✕ ni bosib, yangisini yuklang</span>
-        </div>
-      ) : (
+      {src ? (
         <img
           src={src} alt="preview"
-          onError={() => { if (src !== url) setSrc(url); else setFailed(true) }}
+          onError={() => { if (src === localUrl) setLocalFailed(true) }}
           style={{ width: '100%', maxHeight: 200, objectFit: 'cover', display: 'block' }}
         />
+      ) : (
+        <div style={{ padding: '28px 12px', textAlign: 'center', fontSize: 13, color: 'var(--success)' }}>
+          {remote.failed ? (
+            <>
+              ✅ Rasm avval yuklangan<br />
+              <span style={{ fontSize: 12, opacity: 0.8 }}>Almashtirish uchun ✕ ni bosib, yangisini yuklang</span>
+            </>
+          ) : '⏳ Rasm yuklanmoqda...'}
+        </div>
       )}
       <button
         type="button"

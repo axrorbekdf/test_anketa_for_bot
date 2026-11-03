@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useImageSrc } from '../api/useImageSrc'
 
 function Lightbox({ url, onClose }) {
   if (!url) return null
@@ -73,13 +74,24 @@ function Field({ label, value }) {
 }
 
 function PhotoField({ label, url, onZoom }) {
+  const { src, failed } = useImageSrc(url)
   if (!url) return null
+  if (!src) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600 }}>{label}</span>
+        <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+          {failed ? '✅ Rasm yuklangan' : '⏳ Rasm yuklanmoqda...'}
+        </span>
+      </div>
+    )
+  }
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600 }}>{label}</span>
-      <div style={{ position: 'relative', cursor: 'zoom-in' }} onClick={() => onZoom(url)}>
+      <div style={{ position: 'relative', cursor: 'zoom-in' }} onClick={() => onZoom(src)}>
         <img
-          src={url} alt={label}
+          src={src} alt={label}
           style={{ width: '100%', maxHeight: 220, objectFit: 'cover', borderRadius: 10, border: '1.5px solid var(--border)', display: 'block' }}
         />
         <div style={{
